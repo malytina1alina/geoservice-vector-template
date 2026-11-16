@@ -320,8 +320,10 @@ def area_cells(key, polygon, card, population, cells=None):
     # Длина улиц каждой категории в ячейке, км.
     length = streets.assign(км=streets.length / 1000).pivot_table(index="cell", columns="категория", values="км", aggfunc="sum")
     result = grid.join(selected_counts).join(near).join(length.add_suffix(", км")).fillna(0)  # Все признаки, пропуски – 0.
-    if population is not None:  # Город: население сразу.
-        result["население"] = population(result)  # Запрос к Earth Engine.
+    if population is not None:  # Город: население сразу – в части ячейки внутри границы, где загружены и объекты OSM.
+        inside = gpd.overlay(result.reset_index()[["cell", "geometry"]], gpd.GeoDataFrame(geometry=[polygon], crs="EPSG:4326"),
+                             keep_geom_type=True).set_index("cell")  # Ячейки, обрезанные границей города.
+        result["население"] = pd.Series(population(inside), index=inside.index).reindex(result.index, fill_value=0)  # Earth Engine.
     centers = result.geometry.to_crs(utm).centroid.to_frame("geometry")  # Центры ячеек в метрах.
     for name, tags in near_tags.items():  # Расстояние от центра ячейки до ближайшего объекта.
         objects = loaded[cache_path(key, tags)].reset_index()[["geometry"]].to_crs(utm)  # Все объекты, и объекты темы тоже.
