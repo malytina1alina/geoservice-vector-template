@@ -102,8 +102,8 @@ def download(name, path):
 def env_categories(extra_env):
     """Базовые категории и дополнительные факторы темы – в том же порядке и с теми же именами, что при обучении модели."""
     env = dict(BASE_ENV)  # Копия: справочник не меняется.
-    for i, tags in enumerate(extra_env, 1):  # Имя фактора – его теги, например «фактор 1: shop=tyres».
-        env[f"фактор {i}: " + ", ".join(f"{k}={'*' if v is True else '|'.join(v)}" for k, v in tags.items())] = tags  # Новая категория.
+    for i, tags in enumerate(extra_env, 1):  # Имя фактора – его теги, например «фактор 1: shop=tyres»; ключи – через «или».
+        env[f"фактор {i}: " + " или ".join(f"{k}={'*' if v is True else '|'.join(v)}" for k, v in tags.items())] = tags  # Новая категория.
     return env  # Категория: теги.
 
 
@@ -326,7 +326,8 @@ def area_cells(key, polygon, card, population, cells=None):
         result["население"] = pd.Series(population(inside), index=inside.index).reindex(result.index, fill_value=0)  # Earth Engine.
     centers = result.geometry.to_crs(utm).centroid.to_frame("geometry")  # Центры ячеек в метрах.
     for name, tags in near_tags.items():  # Расстояние от центра ячейки до ближайшего объекта.
-        objects = loaded[cache_path(key, tags)].reset_index()[["geometry"]].to_crs(utm)  # Все объекты, и объекты темы тоже.
+        objects = loaded[cache_path(key, tags)]  # Объекты фактора или магистральные улицы.
+        objects = objects[~objects.index.isin(targets.index)].reset_index()[["geometry"]].to_crs(utm)  # Без объектов темы.
         if len(objects):  # Объектов нет – признак добавится ниже.
             nearest = gpd.sjoin_nearest(centers, objects, distance_col="м")["м"].groupby(level=0).min()  # Равноудалённые – одно.
             result[f"до: {name}, км"] = (nearest / 1000).round(3)  # Километры.
