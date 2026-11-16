@@ -273,10 +273,10 @@ with left:  # Левая колонка: показатели и карта.
                 st.rerun()  # Показать её на карте.
             except ValueError as error:  # Некорректная фигура.
                 st.error(str(error))  # Например, самопересечение контура.
-    symbols = "Номерные метки — места-кандидаты, белые точки — существующие объекты. " if shown else ""  # Условные знаки.
+    symbols = "Номерные метки – места-кандидаты, белые точки – существующие объекты. " if shown else ""  # Условные знаки.
     source = "Объекты" if area and area["method"] == "Полигон" else "Объекты и границы"  # Что взято из OpenStreetMap.
-    st.markdown(f'<div class="source">{symbols}{source} — © OpenStreetMap (ODbL), население — '  # Источники данных.
-                "GHS-POP (CC BY 4.0), подложка — Esri.</div>",
+    st.markdown(f'<div class="source">{symbols}{source} – © OpenStreetMap (ODbL), население – '  # Источники данных.
+                "GHS-POP (CC BY 4.0), подложка – Esri.</div>",
                 unsafe_allow_html=True)
 
 if not shown:  # Результата нет.
@@ -314,7 +314,7 @@ if s["ячеек вне диапазона обучения, %"] > 20:  # Мно
 
 with left, st.container(border=True, gap="xsmall"):  # Блок мест-кандидатов.
     st.subheader("Места-кандидаты")  # Заголовок блока.
-    st.caption("Потенциал — разность между прогнозом модели и числом существующих объектов в ячейке.")  # Пояснение.
+    st.caption("Потенциал – разность между прогнозом модели и числом существующих объектов в ячейке.")  # Пояснение.
     table = pd.DataFrame({"Адрес": candidates.get("адрес", ""), "Потенциал": candidates["потенциал"],  # Таблица кандидатов.
                           "Ожидается": candidates["ожидаемое"], "Есть сейчас": candidates["объектов темы"].astype(int),
                           "Широта": candidates.geometry.centroid.y, "Долгота": candidates.geometry.centroid.x

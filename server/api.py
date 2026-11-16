@@ -42,7 +42,7 @@ def cities():  # Для выбора города на странице.
 def city_boundary(city: str):
     """Граница города для карты клиентской части: из справочника или поиском по названию в OpenStreetMap."""
     try:
-        return {"city": city, "geometry": mapping(place(city.strip())[1])}  # Граница в GeoJSON.
+        return {"city": city, "geometry": mapping(place(norm(city))[1])}  # Граница в GeoJSON.
     except ValueError as error:  # Город не найден или слишком велик.
         raise HTTPException(400, str(error))  # 400 – название нужно уточнить.
 
@@ -67,6 +67,10 @@ def response(cells, candidates, targets, summary):
             "extension": {"name": ext.get("name"), "text": ext.get("text"), "column": ext.get("column"),
                           "layer": None if ext.get("layer") is None else to_json(ext["layer"]),
                           "table": None if ext.get("table") is None else ext["table"].to_dict(orient="records")}}
+
+
+def norm(city):  # Название города: без пробелов по краям; неразрывный дефис («Санкт‑Петербург» из документов) – обычный.
+    return city.strip().replace("‑", "-").replace("‐", "-")
 
 
 def guarded(compute, *args):
@@ -111,15 +115,15 @@ def run_training(city, target, extra_env, geometry=None):  # Расчёт с о�
 @app.get("/analyze")  # Город по названию.
 def analyze_city(city: str):
     """Режим «своя модель»: обученная модель из models/ применяется к любому городу. Повторный запрос берётся из памяти."""
-    return guarded(run_model, city.strip())  # Город из справочника или поиском по названию.
+    return guarded(run_model, norm(city))  # Город из справочника или поиском по названию.
 
 
 @app.post("/analyze")  # Своя область GeoJSON.
 def analyze_area(req: AreaRequest):  # Название и граница области.
-    return guarded(run_model, req.city.strip(), key(req.geometry))  # Своя область из GeoJSON.
+    return guarded(run_model, norm(req.city), key(req.geometry))  # Своя область из GeoJSON.
 
 
 @app.post("/train")  # Обучение на лету.
 def train_city(req: TrainRequest):
     """Режим «обучение на лету»: модель обучается по выбранному городу и тегам, прогноз – вне обучения."""
-    return guarded(run_training, req.city.strip(), key(req.target), key(req.extra_env), key(req.geometry))  # Город или область.
+    return guarded(run_training, norm(req.city), key(req.target), key(req.extra_env), key(req.geometry))  # Город или область.
