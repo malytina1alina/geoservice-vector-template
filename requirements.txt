@@ -1,0 +1,17 @@
+earthengine-api
+osmnx==2.1.1
+h3==4.5.0
+geopandas
+pyogrio
+pyproj
+shapely>=2.1
+pyarrow
+scikit-learn==1.9.1
+joblib
+fastapi
+httpx
+uvicorn[standard]
+streamlit>=1.67
+streamlit-folium
+folium
+requests

@@ -1,0 +1,799 @@
+{
+ "objects": [
+  {
+   "name": "Магазины автозапчастей",
+   "target": [
+    {
+     "shop": [
+      "car_parts"
+     ]
+    }
+   ],
+   "factors": [
+    "Автосервисы и шиномонтаж",
+    "Автозаправочные станции"
+   ]
+  },
+  {
+   "name": "Автозаправочные станции",
+   "target": [
+    {
+     "amenity": [
+      "fuel"
+     ]
+    }
+   ],
+   "factors": [
+    "Автосалоны",
+    "Автосервисы"
+   ]
+  },
+  {
+   "name": "Автомойки",
+   "target": [
+    {
+     "amenity": [
+      "car_wash"
+     ]
+    }
+   ],
+   "factors": [
+    "Автозаправочные станции",
+    "Автосервисы"
+   ]
+  },
+  {
+   "name": "Автосалоны",
+   "target": [
+    {
+     "shop": [
+      "car"
+     ]
+    }
+   ],
+   "factors": [
+    "Автосервисы",
+    "Автозаправочные станции"
+   ]
+  },
+  {
+   "name": "Аптеки",
+   "target": [
+    {
+     "amenity": [
+      "pharmacy"
+     ]
+    },
+    {
+     "healthcare": [
+      "pharmacy"
+     ]
+    }
+   ],
+   "factors": []
+  },
+  {
+   "name": "Банковские отделения",
+   "target": [
+    {
+     "amenity": [
+      "bank"
+     ]
+    }
+   ],
+   "factors": [
+    "Банкоматы"
+   ]
+  },
+  {
+   "name": "Банкоматы",
+   "target": [
+    {
+     "amenity": [
+      "atm"
+     ]
+    }
+   ],
+   "factors": [
+    "Банки",
+    "Торговые центры"
+   ]
+  },
+  {
+   "name": "Бары и пабы",
+   "target": [
+    {
+     "amenity": [
+      "bar",
+      "pub"
+     ]
+    }
+   ],
+   "factors": [
+    "Рестораны и ночные клубы"
+   ]
+  },
+  {
+   "name": "Ветеринарные клиники",
+   "target": [
+    {
+     "amenity": [
+      "veterinary"
+     ]
+    }
+   ],
+   "factors": [
+    "Зоомагазины"
+   ]
+  },
+  {
+   "name": "Гостиницы, хостелы и гостевые дома",
+   "target": [
+    {
+     "tourism": [
+      "hotel",
+      "hostel",
+      "guest_house"
+     ]
+    }
+   ],
+   "factors": [
+    "Достопримечательности",
+    "Музеи",
+    "Железнодорожные станции"
+   ]
+  },
+  {
+   "name": "Детские сады",
+   "target": [
+    {
+     "amenity": [
+      "kindergarten"
+     ]
+    }
+   ],
+   "factors": [
+    "Детские площадки"
+   ]
+  },
+  {
+   "name": "Заведения быстрого питания",
+   "target": [
+    {
+     "amenity": [
+      "fast_food"
+     ]
+    }
+   ],
+   "factors": [
+    "Торговые центры"
+   ]
+  },
+  {
+   "name": "Зоомагазины",
+   "target": [
+    {
+     "shop": [
+      "pet"
+     ]
+    }
+   ],
+   "factors": [
+    "Ветеринарные клиники"
+   ]
+  },
+  {
+   "name": "Кафе и кофейни",
+   "target": [
+    {
+     "amenity": [
+      "cafe"
+     ]
+    }
+   ],
+   "factors": [
+    "Высшие учебные заведения и колледжи",
+    "Достопримечательности"
+   ]
+  },
+  {
+   "name": "Магазины детских товаров",
+   "target": [
+    {
+     "shop": [
+      "toys",
+      "baby_goods"
+     ]
+    }
+   ],
+   "factors": [
+    "Детские сады",
+    "Детские площадки"
+   ]
+  },
+  {
+   "name": "Магазины косметики и парфюмерии",
+   "target": [
+    {
+     "shop": [
+      "cosmetics",
+      "perfumery"
+     ]
+    }
+   ],
+   "factors": [
+    "Торговые центры"
+   ]
+  },
+  {
+   "name": "Магазины одежды и обуви",
+   "target": [
+    {
+     "shop": [
+      "clothes",
+      "shoes"
+     ]
+    }
+   ],
+   "factors": [
+    "Торговые центры"
+   ]
+  },
+  {
+   "name": "Магазины у дома",
+   "target": [
+    {
+     "shop": [
+      "convenience"
+     ]
+    }
+   ],
+   "factors": [
+    "Супермаркеты"
+   ]
+  },
+  {
+   "name": "Мебельные магазины",
+   "target": [
+    {
+     "shop": [
+      "furniture"
+     ]
+    }
+   ],
+   "factors": [
+    "Строительные магазины и хозяйственные магазины"
+   ]
+  },
+  {
+   "name": "Парикмахерские",
+   "target": [
+    {
+     "shop": [
+      "hairdresser"
+     ]
+    }
+   ],
+   "factors": [
+    "Салоны красоты"
+   ]
+  },
+  {
+   "name": "Пекарни",
+   "target": [
+    {
+     "shop": [
+      "bakery"
+     ]
+    }
+   ],
+   "factors": []
+  },
+  {
+   "name": "Пиццерии",
+   "target": [
+    {
+     "cuisine": [
+      "pizza"
+     ],
+     "amenity": [
+      "fast_food",
+      "restaurant"
+     ]
+    }
+   ],
+   "factors": [
+    "Высшие учебные заведения"
+   ]
+  },
+  {
+   "name": "Поликлиники и медицинские центры",
+   "target": [
+    {
+     "amenity": [
+      "clinic",
+      "doctors"
+     ]
+    },
+    {
+     "healthcare": [
+      "clinic",
+      "doctor"
+     ]
+    }
+   ],
+   "factors": [
+    "Аптеки"
+   ]
+  },
+  {
+   "name": "Почтовые отделения",
+   "target": [
+    {
+     "amenity": [
+      "post_office"
+     ]
+    }
+   ],
+   "factors": [
+    "Пункты выдачи заказов"
+   ]
+  },
+  {
+   "name": "Пункты выдачи заказов",
+   "target": [
+    {
+     "shop": [
+      "outpost"
+     ]
+    }
+   ],
+   "factors": [
+    "Магазины у дома"
+   ]
+  },
+  {
+   "name": "Рестораны",
+   "target": [
+    {
+     "amenity": [
+      "restaurant"
+     ]
+    }
+   ],
+   "factors": [
+    "Гостиницы",
+    "Достопримечательности"
+   ]
+  },
+  {
+   "name": "Салоны красоты",
+   "target": [
+    {
+     "shop": [
+      "beauty"
+     ]
+    }
+   ],
+   "factors": [
+    "Парикмахерские"
+   ]
+  },
+  {
+   "name": "Салоны оптики",
+   "target": [
+    {
+     "shop": [
+      "optician"
+     ]
+    }
+   ],
+   "factors": []
+  },
+  {
+   "name": "Салоны связи и магазины электроники",
+   "target": [
+    {
+     "shop": [
+      "mobile_phone",
+      "electronics"
+     ]
+    }
+   ],
+   "factors": [
+    "Торговые центры"
+   ]
+  },
+  {
+   "name": "Спортивные магазины",
+   "target": [
+    {
+     "shop": [
+      "sports",
+      "outdoor"
+     ]
+    }
+   ],
+   "factors": [
+    "Спортивные центры и стадионы"
+   ]
+  },
+  {
+   "name": "Стоматологические клиники",
+   "target": [
+    {
+     "amenity": [
+      "dentist"
+     ]
+    },
+    {
+     "healthcare": [
+      "dentist"
+     ]
+    }
+   ],
+   "factors": []
+  },
+  {
+   "name": "Супермаркеты",
+   "target": [
+    {
+     "shop": [
+      "supermarket"
+     ]
+    }
+   ],
+   "factors": [
+    "Магазины у дома"
+   ]
+  },
+  {
+   "name": "Фитнес-клубы",
+   "target": [
+    {
+     "leisure": [
+      "fitness_centre"
+     ]
+    }
+   ],
+   "factors": [
+    "Высшие учебные заведения"
+   ]
+  },
+  {
+   "name": "Хозяйственные магазины",
+   "target": [
+    {
+     "shop": [
+      "hardware",
+      "doityourself"
+     ]
+    }
+   ],
+   "factors": []
+  },
+  {
+   "name": "Цветочные магазины",
+   "target": [
+    {
+     "shop": [
+      "florist"
+     ]
+    }
+   ],
+   "factors": [
+    "Больницы",
+    "Кладбища",
+    "Территории кладбищ"
+   ]
+  },
+  {
+   "name": "Школы",
+   "target": [
+    {
+     "amenity": [
+      "school"
+     ]
+    }
+   ],
+   "factors": [
+    "Детские площадки"
+   ]
+  }
+ ],
+ "factors": [
+  {
+   "name": "Автозаправочные станции",
+   "tags": {
+    "amenity": [
+     "fuel"
+    ]
+   }
+  },
+  {
+   "name": "Автосалоны",
+   "tags": {
+    "shop": [
+     "car"
+    ]
+   }
+  },
+  {
+   "name": "Автосервисы",
+   "tags": {
+    "shop": [
+     "car_repair"
+    ]
+   }
+  },
+  {
+   "name": "Автосервисы и шиномонтаж",
+   "tags": {
+    "shop": [
+     "car_repair",
+     "tyres"
+    ]
+   }
+  },
+  {
+   "name": "Аптеки",
+   "tags": {
+    "amenity": [
+     "pharmacy"
+    ]
+   }
+  },
+  {
+   "name": "Банки",
+   "tags": {
+    "amenity": [
+     "bank"
+    ]
+   }
+  },
+  {
+   "name": "Банкоматы",
+   "tags": {
+    "amenity": [
+     "atm"
+    ]
+   }
+  },
+  {
+   "name": "Больницы",
+   "tags": {
+    "amenity": [
+     "hospital"
+    ]
+   }
+  },
+  {
+   "name": "Ветеринарные клиники",
+   "tags": {
+    "amenity": [
+     "veterinary"
+    ]
+   }
+  },
+  {
+   "name": "Высшие учебные заведения",
+   "tags": {
+    "amenity": [
+     "university"
+    ]
+   }
+  },
+  {
+   "name": "Высшие учебные заведения и колледжи",
+   "tags": {
+    "amenity": [
+     "university",
+     "college"
+    ]
+   }
+  },
+  {
+   "name": "Гостиницы",
+   "tags": {
+    "tourism": [
+     "hotel"
+    ]
+   }
+  },
+  {
+   "name": "Детские площадки",
+   "tags": {
+    "leisure": [
+     "playground"
+    ]
+   }
+  },
+  {
+   "name": "Детские сады",
+   "tags": {
+    "amenity": [
+     "kindergarten"
+    ]
+   }
+  },
+  {
+   "name": "Достопримечательности",
+   "tags": {
+    "tourism": [
+     "attraction"
+    ]
+   }
+  },
+  {
+   "name": "Железнодорожные станции",
+   "tags": {
+    "railway": [
+     "station"
+    ]
+   }
+  },
+  {
+   "name": "Зоомагазины",
+   "tags": {
+    "shop": [
+     "pet"
+    ]
+   }
+  },
+  {
+   "name": "Кладбища",
+   "tags": {
+    "amenity": [
+     "grave_yard"
+    ]
+   }
+  },
+  {
+   "name": "Колледжи",
+   "tags": {
+    "amenity": [
+     "college"
+    ]
+   }
+  },
+  {
+   "name": "Магазины у дома",
+   "tags": {
+    "shop": [
+     "convenience"
+    ]
+   }
+  },
+  {
+   "name": "Музеи",
+   "tags": {
+    "tourism": [
+     "museum"
+    ]
+   }
+  },
+  {
+   "name": "Ночные клубы",
+   "tags": {
+    "amenity": [
+     "nightclub"
+    ]
+   }
+  },
+  {
+   "name": "Парикмахерские",
+   "tags": {
+    "shop": [
+     "hairdresser"
+    ]
+   }
+  },
+  {
+   "name": "Пункты выдачи заказов",
+   "tags": {
+    "shop": [
+     "outpost"
+    ]
+   }
+  },
+  {
+   "name": "Рестораны",
+   "tags": {
+    "amenity": [
+     "restaurant"
+    ]
+   }
+  },
+  {
+   "name": "Рестораны и ночные клубы",
+   "tags": {
+    "amenity": [
+     "restaurant",
+     "nightclub"
+    ]
+   }
+  },
+  {
+   "name": "Салоны красоты",
+   "tags": {
+    "shop": [
+     "beauty"
+    ]
+   }
+  },
+  {
+   "name": "Спортивные центры",
+   "tags": {
+    "leisure": [
+     "sports_centre"
+    ]
+   }
+  },
+  {
+   "name": "Спортивные центры и стадионы",
+   "tags": {
+    "leisure": [
+     "sports_centre",
+     "stadium"
+    ]
+   }
+  },
+  {
+   "name": "Стадионы",
+   "tags": {
+    "leisure": [
+     "stadium"
+    ]
+   }
+  },
+  {
+   "name": "Строительные магазины",
+   "tags": {
+    "shop": [
+     "doityourself"
+    ]
+   }
+  },
+  {
+   "name": "Строительные магазины и хозяйственные магазины",
+   "tags": {
+    "shop": [
+     "doityourself",
+     "hardware"
+    ]
+   }
+  },
+  {
+   "name": "Супермаркеты",
+   "tags": {
+    "shop": [
+     "supermarket"
+    ]
+   }
+  },
+  {
+   "name": "Территории кладбищ",
+   "tags": {
+    "landuse": [
+     "cemetery"
+    ]
+   }
+  },
+  {
+   "name": "Торговые центры",
+   "tags": {
+    "shop": [
+     "mall"
+    ]
+   }
+  },
+  {
+   "name": "Хозяйственные магазины",
+   "tags": {
+    "shop": [
+     "hardware"
+    ]
+   }
+  }
+ ]
+}
