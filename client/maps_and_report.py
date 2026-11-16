@@ -80,11 +80,11 @@ class Controls(MacroElement):
         self.bases, self.overlays = bases, overlays  # Пары (название, слой).
 
 
-def legend(m, title, colors, low, high, style=""):
-    """Легенда-шкала в правом нижнем углу карты; style – другое положение, например выше другой легенды."""
+def legend(m, title, colors, low, high):
+    """Легенда-шкала в правом нижнем углу карты."""
     gradient = ", ".join(colors)  # Цвета шкалы слева направо.
     # Легенда-шкала поверх карты.
-    m.get_root().html.add_child(Element(f'<div class="map-legend" style="{style}"><b>{title}</b><div class="bar" style="background:linear-gradient('
+    m.get_root().html.add_child(Element(f'<div class="map-legend"><b>{title}</b><div class="bar" style="background:linear-gradient('
                                         f'90deg, {gradient})"></div><div class="ends"><span>{low}</span><span>{high}</span></div></div>'))
 
 
@@ -336,8 +336,8 @@ def value_label(value):  # Значение для подсказки: цело�
 
 
 def add_extension(m, layer, name, column=None):
-    """Слой собственной функции: жёлтый контур, заливка по числовому столбцу column – от светлой (меньше) к тёмной
-    (больше) – и легенда шкалы; без такого столбца – только контур. Подсказка показывает значения столбцов слоя."""
+    """Слой собственной функции: жёлтый контур и заливка по числовому столбцу column – от светлой (меньше) к тёмной
+    (больше); без такого столбца – только контур. Подсказка показывает значения столбцов слоя."""
     if layer is None or not len(layer):  # Функция не вернула слой.
         return
     fields = [c for c in layer.columns if c != "geometry"][:6]  # До шести столбцов в подсказке.
@@ -357,8 +357,6 @@ def add_extension(m, layer, name, column=None):
     overlay(m, folium.GeoJson(shown, control=False, tooltip=tooltip,  # Заливка по значению, жёлтый контур.
                               style_function=lambda f: {"fillColor": f["properties"]["_цвет"], "fillOpacity": 0.75,
                                                         "color": "#ffd166", "weight": 1.5}), name)
-    legend(m, html.escape(f"{name}: {column}"), EXT_COLORS, value_label(low), value_label(high),  # Шкала над шкалой потенциала.
-           style="bottom:84px")
 
 
 def full_map(result, boundary, label):
