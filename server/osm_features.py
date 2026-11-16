@@ -307,8 +307,8 @@ def area_cells(key, polygon, card, population, cells=None):
     points = env_objects[~is_street].copy()  # Остальное – числом объектов.
     points["geometry"] = points.geometry.representative_point()  # Здание или площадь – точкой внутри.
 
-    if not custom:  # Город: ячейки, центры которых внутри границы.
-        cells = list(h3.geo_to_cells(polygon, res))  # Номера ячеек H3.
+    if not custom:  # Город: ячейки внутри границы и все ячейки, которые она пересекает.
+        cells = list(h3.h3shape_to_cells_experimental(h3.geo_to_h3shape(polygon), res, contain="overlap"))  # Номера ячеек H3.
     grid = gpd.GeoDataFrame({"cell": cells}, crs="EPSG:4326", geometry=hexagons(cells)).set_index("cell")  # Сетка.
     counts = points.groupby([cells_of(points.geometry, res), points["категория"]]).size().unstack(fill_value=0)  # Ячейка × категория.
     selected_counts = counts.reindex(grid.index, fill_value=0)  # Только ячейки сетки, пустые – нули.

@@ -20,6 +20,7 @@ ACCENT = "#087f73"  # Цвет нарисованных фигур.
 # Потенциал: красный – объектов больше ожидаемого (открывать не нужно), зелёный – меньше ожидаемого (стоит открывать).
 GAP_COLORS = ["#a50026", "#e8604a", "#fdbf9a", "#f7f7f7", "#c2e5b3", "#5fb85f", "#00682f"]
 GREEN = ["#a6dba0", "#5aae61", "#1b7837", "#00441b"]  # Места-кандидаты: ниже → выше потенциал.
+EXT_COLORS = ["#f2f0f7", "#bcbddc", "#807dba", "#54278f", "#2d004b"]  # Слой собственной функции: меньше → больше.
 HEAT_OPEN = {0.2: "#d9f0d3", 0.45: "#a6dba0", 0.65: "#5aae61", 0.85: "#1b7837", 1: "#00441b"}  # Где стоит открывать.
 HEAT_SKIP = {0.2: "#fddbc7", 0.45: "#f4a582", 0.65: "#d6604d", 0.85: "#b2182b", 1: "#67001f"}  # Где открывать не нужно.
 # Подложки Esri: сервис и название в списке.
@@ -79,11 +80,11 @@ class Controls(MacroElement):
         self.bases, self.overlays = bases, overlays  # Пары (название, слой).
 
 
-def legend(m, title, colors, low, high):
-    """Легенда-шкала в правом нижнем углу карты."""
+def legend(m, title, colors, low, high, style=""):
+    """Легенда-шкала в правом нижнем углу карты; style – другое положение, например выше другой легенды."""
     gradient = ", ".join(colors)  # Цвета шкалы слева направо.
     # Легенда-шкала поверх карты.
-    m.get_root().html.add_child(Element(f'<div class="map-legend"><b>{title}</b><div class="bar" style="background:linear-gradient('
+    m.get_root().html.add_child(Element(f'<div class="map-legend" style="{style}"><b>{title}</b><div class="bar" style="background:linear-gradient('
                                         f'90deg, {gradient})"></div><div class="ends"><span>{low}</span><span>{high}</span></div></div>'))
 
 
@@ -326,10 +327,38 @@ def add_candidates(m, candidates, label):
     overlay(m, group, "Места-кандидаты")  # Слой мест-кандидатов.
 
 
-def add_extension(m, layer, name):  # Слой собственной функции расширения – жёлтый контур.
-    if layer is not None and len(layer):  # Функция вернула непустой слой.
-        overlay(m, folium.GeoJson(layer, control=False,  # Жёлтый контур без заливки.
+def value_label(value):  # Значение для подсказки: целое – без дробной части, дробное – с запятой, текст – как есть.
+    if isinstance(value, (bool, np.bool_)) or not isinstance(value, (int, float, np.number)):  # Не число.
+        return "" if value is None else str(value)  # Текст или пустая строка.
+    if not np.isfinite(value):  # Пропуск в данных.
+        return "–"  # Прочерк вместо nan.
+    return fmt(float(value), 0) if float(value).is_integer() else num(float(value))  # 1500 → «1 500», 0.25 → «0,25».
+
+
+def add_extension(m, layer, name, column=None):
+    """Слой собственной функции: жёлтый контур, заливка по числовому столбцу column – от светлой (меньше) к тёмной
+    (больше) – и легенда шкалы; без такого столбца – только контур. Подсказка показывает значения столбцов слоя."""
+    if layer is None or not len(layer):  # Функция не вернула слой.
+        return
+    fields = [c for c in layer.columns if c != "geometry"][:6]  # До шести столбцов в подсказке.
+    shown = layer[["geometry"]].copy()  # Слой для карты: подписи вместо исходных значений.
+    for c in fields:  # Каждый столбец подсказки.
+        shown[c] = layer[c].map(value_label)  # Число с запятой.
+    tooltip = folium.GeoJsonTooltip(fields, sticky=True) if fields else None  # Подсказка при наведении.
+    colored = column in layer.columns and pd.api.types.is_numeric_dtype(layer[column]) and layer[column].notna().any()
+    if not colored:  # Столбец не задан или не числовой – только контур.
+        overlay(m, folium.GeoJson(shown, control=False, tooltip=tooltip,  # Жёлтый контур без заливки.
                                   style_function=lambda f: {"color": "#ffd166", "weight": 2.5, "fillOpacity": 0}), name)
+        return
+    values = layer[column].astype(float)  # Значения для цвета.
+    low, high = float(values.min()), float(values.max())  # Пределы шкалы.
+    scale = cm.LinearColormap(EXT_COLORS, vmin=low, vmax=max(high, low + 1e-9))  # Шкала не вырождается при равных значениях.
+    shown["_цвет"] = [scale(v) if np.isfinite(v) else "#9aa5b1" for v in values]  # Цвет каждой геометрии; пропуск – серый.
+    overlay(m, folium.GeoJson(shown, control=False, tooltip=tooltip,  # Заливка по значению, жёлтый контур.
+                              style_function=lambda f: {"fillColor": f["properties"]["_цвет"], "fillOpacity": 0.75,
+                                                        "color": "#ffd166", "weight": 1.5}), name)
+    legend(m, html.escape(f"{name}: {column}"), EXT_COLORS, value_label(low), value_label(high),  # Шкала над шкалой потенциала.
+           style="bottom:84px")
 
 
 def full_map(result, boundary, label):
@@ -342,7 +371,7 @@ def full_map(result, boundary, label):
     if boundary is not None:  # Граница известна.
         add_boundary(m, boundary)  # Белый пунктир поверх ячеек.
     ext = result["extension"]  # Ответ функции расширения.
-    add_extension(m, result_layer(ext["layer"]) if ext.get("layer") else None, ext["name"])  # Слой расширения, если он есть.
+    add_extension(m, result_layer(ext["layer"]) if ext.get("layer") else None, ext["name"], ext.get("column"))  # Слой расширения, если он есть.
     add_targets(m, result_layer(result["targets"]), label)  # Существующие объекты темы.
     add_candidates(m, candidate_layer(result), label)  # Места-кандидаты – поверх объектов.
     legend(m, "Потенциал размещения", GAP_COLORS, "открывать не нужно", "стоит открывать")  # Легенда шкалы потенциала.
@@ -409,8 +438,7 @@ def build_report(result, boundary, params):
     is_city = params.get("method", "Город") == "Город"  # Город из списка или своя область.
     region = "городе" if is_city else "области"  # Окончание для подзаголовка.
     subject = "Город" if is_city else "Область"  # Начало заголовка раздела 1.
-    selection = ("В границы попадают центры ячеек H3 разрешения 9" if is_city else  # Как ячейки отбираются в область.
-                 "Область покрыта целыми ячейками H3 разрешения 9, включая ячейки на краю")
+    selection = "Ячейки H3 разрешения 9 – все, которые лежат внутри границы или пересекают её"  # Как ячейки отбираются.
     title = html.escape(params["title"])  # Заголовок отчёта и вкладки.
     # Подпись и значение каждой плитки.
     metrics = [(f"{label.lower()}: есть сейчас", fmt(s["объектов темы"], 0)), ("ожидается по модели", fmt(s["ожидаемое число"])),
@@ -441,7 +469,7 @@ def build_report(result, boundary, params):
         if ext.get("layer"):  # Функция вернула слой.
             m4 = base_map(bounds)  # Карта 4: слой расширения.
             add_boundary(m4, boundary)  # Граница области.
-            add_extension(m4, result_layer(ext["layer"]), ext["name"])  # Слой функции расширения.
+            add_extension(m4, result_layer(ext["layer"]), ext["name"], ext.get("column"))  # Слой функции расширения.
             finish(m4)  # Кнопки слоёв.
         parts.append(section(f"4. {html.escape(ext['name'])}", html.escape(ext.get("text") or ""), m4))  # Раздел: название, вывод, карта.
         if ext.get("table"):  # Функция вернула таблицу.
