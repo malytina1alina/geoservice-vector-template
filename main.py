@@ -31,8 +31,9 @@ API_URL = (os.environ.get("API_URL") or secret("API_URL")).rstrip("/")
 SERVICE = Path(__file__).resolve().parent  # Папка сервиса.
 
 
-def code_version():  # Время последнего изменения кода серверной части.
-    files = [*SERVICE.glob("server/*.py"), SERVICE / "extensions.py"]  # Код серверной части и собственная функция.
+def code_version():  # Время последнего изменения кода серверной части и модели.
+    # Код серверной части, собственная функция и файлы модели.
+    files = [*SERVICE.glob("server/*.py"), SERVICE / "extensions.py", *SERVICE.glob("models/**/*.*")]
     return max(f.stat().st_mtime for f in files)  # Обновили репозиторий – значение изменилось.
 
 
@@ -63,8 +64,12 @@ def answer(response):
 
 
 @st.cache_data(ttl=3600, show_spinner=False)  # Одинаковые запросы – из кэша в течение часа.
-def get(path, **params):  # Запрос GET к серверной части.
+def cached_get(version, path, **params):  # version – только для ключа кэша: новая модель или код – новый ответ.
     return answer(call("GET", path, params=params, timeout=1800))  # Параметры – в адресе.
+
+
+def get(path, **params):  # Запрос GET к серверной части.
+    return cached_get(code_version(), path, **params)  # Кэш – отдельно для каждой версии кода и модели.
 
 
 def post(path, body):  # Запрос POST к серверной части.
