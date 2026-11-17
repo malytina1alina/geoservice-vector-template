@@ -198,14 +198,15 @@ with right, st.container(border=True, gap="xsmall"):  # Блок парамет�
             with st.form("own_factor", border=False):  # Поля отправляются вместе.
                 a, b = st.columns(2)  # Название и тег рядом.
                 name = a.text_input("Название фактора", placeholder="Ветеринарные клиники")  # Название фактора.
-                tags = parse_tags(b.text_input("Тег OpenStreetMap", placeholder="amenity=veterinary"))  # Тег фактора.
+                tags = parse_tags(b.text_input("Тег OpenStreetMap", placeholder="amenity=veterinary",  # Тег фактора.
+                                               help="Несколько условий – через «;»: объект фактора подходит, если выполнено любое из них."))
                 if st.form_submit_button("Добавить", width="stretch") and name and tags:  # Фактор задан полностью.
                     state["own_factors"][name] = tags[0]  # Сохранить свой фактор.
                     state["pending_factors"] = picked + [name]  # И сразу выбрать его.
                     st.rerun()  # Обновить список факторов.
             for name in list(state["own_factors"]):  # Свои факторы с кнопками удаления.
                 a, b = st.columns([5, 1], vertical_alignment="center")  # Подпись и кнопка рядом.
-                a.caption(f"{name}: {tags_text([state['own_factors'][name]])}")  # Название и тег фактора.
+                a.caption(f"{name}: {tags_text([state['own_factors'][name]], ' или ')}")  # Название и тег фактора.
                 if b.button("✕", key=f"del_{name}", help="Удалить фактор"):  # Удаление фактора.
                     del state["own_factors"][name]  # Убрать фактор.
                     state["pending_factors"] = [p for p in picked if p != name]  # И из выбора.
@@ -316,14 +317,13 @@ with left, st.container(border=True, gap="xsmall"):  # Блок мест-кан�
     st.subheader("Места-кандидаты")  # Заголовок блока.
     st.caption("Потенциал – разность между прогнозом модели и числом существующих объектов в ячейке.")  # Пояснение.
     table = pd.DataFrame({"Адрес": candidates.get("адрес", ""), "Потенциал": candidates["потенциал"],  # Таблица кандидатов.
-                          "Ожидается": candidates["ожидаемое"], "Есть сейчас": candidates["объектов темы"].astype(int),
-                          "Широта": candidates.geometry.centroid.y, "Долгота": candidates.geometry.centroid.x
+                          "Ожидается": candidates["ожидаемое"].map(lambda v: fmt(v, 2)),
+                          "Есть сейчас": candidates["объектов темы"].astype(int),
+                          "Широта": candidates.geometry.centroid.y.map(lambda v: fmt(v, 5)),
+                          "Долгота": candidates.geometry.centroid.x.map(lambda v: fmt(v, 5))
                           }).set_axis(pd.RangeIndex(1, len(candidates) + 1, name="№"))
     st.dataframe(table, width="stretch",  # Таблица с форматом чисел и шкалой потенциала.
-                 column_config={"Адрес": st.column_config.TextColumn(width="large"),
-                                "Широта": st.column_config.NumberColumn(format="%.5f"),
-                                "Долгота": st.column_config.NumberColumn(format="%.5f"),
-                                "Ожидается": st.column_config.NumberColumn(format="%.2f"),
+                 column_config={"Адрес": st.column_config.TextColumn(width="large"),  # Числа – строками с запятой.
                                 "Потенциал": st.column_config.ProgressColumn(format="+%.2f", min_value=0,
                                                                           max_value=float(max(0.01, candidates["потенциал"].max())))})
 
@@ -337,5 +337,7 @@ with right, st.container(border=True, gap="xsmall"):  # Блок собстве�
     st.subheader("Модель расчёта")  # Заголовок блока.
     st.caption(f"{s['режим'].capitalize()}: {s['модель'].lower()}, обучена: {s['города обучения']}.")  # Режим и модель.
     metrics = pd.DataFrame(s.get("metrics") or {s["модель"]: info.get("metrics", {})})  # Точность моделей.
-    st.dataframe(metrics, width="stretch", row_height=28,  # Таблица точности.
-                 column_config={c: st.column_config.NumberColumn(format="%.3f") for c in metrics})
+    # Числа с запятой: доля объектов – один знак, отклонение и MAE – три.
+    metrics = metrics.apply(lambda col: pd.Series([fmt(v, 1 if "%" in str(i) else 3) if isinstance(v, (int, float)) else v
+                                                   for i, v in col.items()], index=col.index))
+    st.dataframe(metrics, width="stretch", row_height=28)  # Таблица точности.

@@ -388,9 +388,9 @@ table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px
 @media (max-width:700px){.metrics{grid-template-columns:repeat(2,1fr)}}"""
 
 
-def tags_text(tags):  # Теги OpenStreetMap строкой: «ключ=значение|значение», «ключ=*» – любое значение.
-    # Теги одной группы – через запятую, группы – через точку с запятой.
-    groups = [", ".join(f"{k}={'|'.join(v) if isinstance(v, list) else '*'}" for k, v in group.items()) for group in tags]
+def tags_text(tags, join=", "):  # Теги OpenStreetMap строкой: «ключ=значение|значение», «ключ=*» – любое значение.
+    # Условия одной группы – через join (у фактора – «или»), группы – через точку с запятой.
+    groups = [join.join(f"{k}={'|'.join(v) if isinstance(v, list) else '*'}" for k, v in group.items()) for group in tags]
     return "; ".join(groups) or "–"  # Прочерк, если тегов нет.
 
 
@@ -448,7 +448,7 @@ def build_report(result, boundary, params):
              f"режим – {s['режим']}; {datetime.date.today():%d.%m.%Y}</div>",
              f'<div class="metrics">{tiles}</div>',
              f'<div class="card">{html.escape(label)}: <b>{html.escape(tags_text(params["target"]))}</b><br>Дополнительные факторы: '
-             f'{html.escape(tags_text(params["extra_env"]))}<br>Модель: {html.escape(s["модель"])}; '
+             f'{html.escape(tags_text(params["extra_env"], " или "))}<br>Модель: {html.escape(s["модель"])}; '
              f'обучена: {html.escape(s["города обучения"])}</div>',
              section(f"1. {subject} и {html.escape(label.lower())}", f"Граница и {fmt(s['объектов темы'], 0)} существующих объектов "
                      f"«{html.escape(label.lower())}» из OpenStreetMap. {selection}: "
