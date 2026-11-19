@@ -136,7 +136,14 @@ def cache_path(key, tags):
 
 
 def has_tags(gdf, tag, values):  # Отбор объектов по одному тегу.
-    return gdf[tag].notna() if values is True else gdf[tag].isin(values)  # Тег есть (True) или одно из значений.
+    if values is True:  # Подходит любое значение.
+        return gdf[tag].notna()  # Тег есть.
+    match = gdf[tag].isin(values)  # Значение совпадает целиком.
+    # Несколько значений тега OSM пишутся через «;» (cuisine=pasta;pizza): подходит, если допустимо хотя бы одно.
+    multi = ~match & gdf[tag].astype("string").str.contains(";", regex=False, na=False)
+    if multi.any():  # Такие объекты проверяются по отдельным значениям.
+        match[multi] = gdf.loc[multi, tag].str.split(";").apply(lambda parts: any(p.strip() in values for p in parts))
+    return match
 
 
 def kept_columns(gdf, tags):  # Столбцы для файла кэша.
