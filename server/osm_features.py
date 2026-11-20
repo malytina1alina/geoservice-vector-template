@@ -107,10 +107,22 @@ def env_categories(extra_env):
     return env  # Категория: теги.
 
 
+def border(osm_id):
+    """Граница города справочника из подготовленного файла GitHub: не зависит от правок OpenStreetMap и доступности
+    Nominatim. Без связи с GitHub – из Nominatim по номеру объекта."""
+    path = os.path.join(CACHE, "borders.geojson")  # Файл границ 41 города.
+    os.makedirs(CACHE, exist_ok=True)  # Папка кэша создаётся при первом обращении.
+    if os.path.exists(path) or download("borders.geojson", path):  # Файл в кэше или скачан.
+        found = gpd.read_file(path).set_index("osm_id").geometry  # Граница по номеру объекта.
+        if osm_id in found.index:
+            return found[osm_id]  # Многоугольник в WGS 84.
+    return ox.geocode_to_gdf(osm_id, by_osmid=True).geometry.iloc[0]  # Запасной путь – Nominatim.
+
+
 def place(city):
     """Номер объекта OSM и граница города: из справочника – по номеру, любой другой город – поиском по названию."""
     if city in CITIES:  # Город справочника – по номеру объекта.
-        return CITIES[city][0], ox.geocode_to_gdf(CITIES[city][0], by_osmid=True).geometry.iloc[0]  # Граница по номеру.
+        return CITIES[city][0], border(CITIES[city][0])  # Подготовленная граница.
     try:
         found = ox.geocode_to_gdf(city)  # Поиск по названию в Nominatim.
     except Exception:  # Ничего не найдено.
