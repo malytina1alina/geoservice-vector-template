@@ -322,7 +322,7 @@ def area_cells(key, polygon, card, population, cells=None):
         env_objects.append(gdf[~gdf.index.isin(targets.index)].reset_index()[["geometry"]].assign(категория=category))
     env_objects = gpd.GeoDataFrame(pd.concat(env_objects), crs="EPSG:4326")  # Одна таблица с категорией.
     is_street = env_objects["категория"].str.endswith("улицы")  # Улицы учитываются длиной.
-    lines = env_objects[is_street]  # Линии улиц.
+    lines = env_objects[is_street & env_objects.geom_type.isin(["LineString", "MultiLineString"])]  # Линии улиц; площадные улицы не имеют длины.
     points = env_objects[~is_street].copy()  # Остальное – числом объектов.
     points["geometry"] = points.geometry.representative_point()  # Здание или площадь – точкой внутри.
 
