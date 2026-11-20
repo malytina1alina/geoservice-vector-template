@@ -27,6 +27,7 @@ def connect():
 def population(cells, year=2020, chunk=2000):
     """Сумма GHS-POP в каждой ячейке (в Earth Engine частями, чтобы не превысить размер запроса)."""
     ghs = ee.ImageCollection("JRC/GHSL/P2023A/GHS_POP").filterDate(f"{year}-01-01", f"{year + 1}-01-01").first()  # Снимок года.
+    ghs = ghs.updateMask(ghs.gte(0))  # Море помечено отрицательным значением «нет данных» – не учитываем.
     values = {}  # Ячейка: население.
     for start in range(0, len(cells), chunk):  # Части по chunk ячеек.
         part = cells.iloc[start:start + chunk].reset_index()[["cell", "geometry"]]  # Только номер и граница.
